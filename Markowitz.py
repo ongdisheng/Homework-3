@@ -61,6 +61,15 @@ class EqualWeightPortfolio:
         """
         TODO: Complete Task 1 Below
         """
+        num_assets = len(assets)
+        equal_weight = 1.0 / num_assets
+        
+        # Assign equal weights to all included assets
+        for asset in assets:
+            self.portfolio_weights[asset] = equal_weight
+        
+        # Assign zero weight to the excluded asset
+        self.portfolio_weights[self.exclude] = 0.0
 
         """
         TODO: Complete Task 1 Above
