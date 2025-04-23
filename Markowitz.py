@@ -213,9 +213,16 @@ class MeanVariancePortfolio:
 
                 # Sample Code: Initialize Decision w and the Objective
                 # NOTE: You can modify the following code
-                w = model.addMVar(n, name="w", ub=1)
-                model.setObjective(w.sum(), gp.GRB.MAXIMIZE)
+                # Decision variables: weights (w_i >= 0, implicitly long-only; no upper bound needed unless specified)
+                w = model.addMVar(n, lb=0, name="w")
 
+                # Objective: max (mu^T w - (gamma/2) * w^T Σ w)
+                mean_term = mu @ w
+                risk_term = w @ Sigma @ w
+                model.setObjective(mean_term - (gamma / 2) * risk_term, gp.GRB.MAXIMIZE)
+
+                # Constraint: sum(w_i) = 1 (no leverage)
+                model.addConstr(w.sum() == 1, name="budget")
                 """
                 TODO: Complete Task 3 Above
                 """
