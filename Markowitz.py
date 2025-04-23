@@ -121,7 +121,24 @@ class RiskParityPortfolio:
         """
         TODO: Complete Task 2 Below
         """
+        for i in range(self.lookback, len(df)):
+            # Get the lookback window of returns
+            window_returns = df_returns.iloc[i - self.lookback:i]
+            # Compute volatility for each asset
+            vol = window_returns[assets].std()
 
+            # Calculate inverse volatility weights
+            inv_vol = 1.0 / vol
+            weights = inv_vol / inv_vol.sum()
+
+            # Assign weights for that date
+            self.portfolio_weights.iloc[i][assets] = weights
+
+        # Set weights to zero for all rows before the lookback window
+        self.portfolio_weights.iloc[:self.lookback+1] = 0.0
+
+        # Set the excluded asset's weight to zero
+        self.portfolio_weights[self.exclude] = 0.0
         """
         TODO: Complete Task 2 Above
         """
