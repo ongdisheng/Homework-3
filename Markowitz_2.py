@@ -70,6 +70,31 @@ class MyPortfolio:
         TODO: Complete Task 4 Below
         """
 
+        for t in range(self.lookback, len(self.price)):
+            price_window = self.price.iloc[t - self.lookback:t]
+            current_prices = self.price.iloc[t]
+
+            # Simple trend filter: current price > moving average
+            ma = price_window.mean()
+            trending_assets = [a for a in assets if current_prices[a] > ma[a]]
+
+            if len(trending_assets) < 3:
+                continue  # hold cash
+
+            # Volatility-based weights
+            returns = price_window[trending_assets].pct_change().dropna()
+            vol = returns.std()
+            inv_vol = 1 / vol
+            weights = inv_vol / inv_vol.sum()
+
+            # Cap and normalize
+            weights = weights.clip(upper=0.4)
+            weights = weights / weights.sum()
+
+            row = pd.Series(0, index=self.price.columns)
+            row[weights.index] = weights
+            self.portfolio_weights.iloc[t] = row
+
         """
         TODO: Complete Task 4 Above
         """
